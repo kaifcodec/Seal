@@ -1,4 +1,4 @@
-name: Build Release APK
+name: Build Split APKs
 
 on:
   workflow_dispatch:
@@ -8,29 +8,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: 📥 Clone Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: 🧰 Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
-          cache: gradle
+          java-version: 17
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: 📦 Grant Gradle Permissions
+        run: chmod +x ./gradlew
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Build APK(s)
+      - name: 🏗️ Build ABI-Split APKs
         run: ./gradlew assembleGenericRelease
 
-      - name: Upload APKs as Artifact
+      - name: ⬆️ Upload Split APKs
         uses: actions/upload-artifact@v4
         with:
-          name: unsigned-apks
-          path: app/build/outputs/apk/**/*.apk
+          name: split-apks
+          path: app/build/outputs/apk/genericRelease/*.apk
           if-no-files-found: error
           retention-days: 20
